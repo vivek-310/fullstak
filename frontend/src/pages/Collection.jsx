@@ -10,19 +10,70 @@ const Collection = () => {
   const[filterproducts,setfilterproducts]=useState([]);
 
   const[category,setcategory]=useState([]);
-  const[subCategory,setsubCategory]=useState=([]);
+  const[subCategory,setsubCategory]=useState([]);
+
+  const[sortType,setsortType]=useState(['revelant']);
 
   const toggleCategory=(e)=>{
     if(category.includes(e.target.value)){
       setcategory(prev=>prev.filter(item=>item!==e.target.value))
 
     }
+    else{
+      setcategory(prev=>[...prev,e.target.value])
+    }
 
   }
 
+  const togglesubCategory=(e)=>{
+    if(subCategory.includes(e.target.value)){
+      setsubCategory(prev=>prev.filter(item=>item!==e.target.value))
+
+    }
+    else{
+      setsubCategory(prev=>[...prev,e.target.value])
+    }
+
+  }
+
+  const applyFilter=()=>{
+    let productsCopy=products.slice();
+    if(category.length>0){
+      productsCopy=productsCopy.filter(item=>category.includes(item.category))
+    }
+    if(subCategory.length>0){
+      productsCopy=productsCopy.filter(item=>subCategory.includes(item.subCategory));
+    }
+
+    setfilterproducts(productsCopy);
+  }
+
+
+  const sortProduct=()=>{
+    applyFilter();
+    let fp=filterproducts.slice();
+    switch(sortType){
+      case 'low-high':
+        setfilterproducts(fp.sort((a,b)=>a.price-b.price));
+        break;
+      case 'high-low':
+        setfilterproducts(fp.sort((a,b)=>b.price-a.price));
+        break;
+      default:
+        applyFilter();
+    }
+  }
+
 useEffect(()=>{
-  setfilterproducts(products);
-},[])
+  console.log(subCategory);
+  console.log(category);
+  applyFilter();
+
+},[category,subCategory]);
+
+  useEffect(()=>{
+    sortProduct();
+  },[sortType])
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -36,15 +87,15 @@ useEffect(()=>{
               <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
               <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Men'} type='checkbox'/>
+                  <input className='w-3' value={'Men'} onChange={toggleCategory} type='checkbox'/>
                 Men
                 </p>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Women'} type='checkbox'/>
+                  <input className='w-3' value={'Women'} onChange={toggleCategory} type='checkbox'/>
                 Women
                 </p>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Kids'} type='checkbox'/>
+                  <input className='w-3' value={'Kids'} onChange={toggleCategory} type='checkbox'/>
                 Kids
                 </p>
               </div>
@@ -54,13 +105,13 @@ useEffect(()=>{
               <p className='mb-3 text-sm font-medium'>TYPE</p>
               <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Topwear'} type='checkbox'/>Topwear
+                  <input className='w-3' value={'Topwear'} onChange={togglesubCategory} type='checkbox'/>Topwear
                 </p>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Bottomwear'} type='checkbox'/>Bottomwear
+                  <input className='w-3' value={'Bottomwear'} onChange={togglesubCategory} type='checkbox'/>Bottomwear
                 </p>
                 <p className='flex gap-2'>
-                  <input className='w-3' value={'Winterwear'} type='checkbox'/>Winterwear
+                  <input className='w-3' value={'Winterwear'} onChange={togglesubCategory} type='checkbox'/>Winterwear
                 </p>
               </div>
           </div>
@@ -69,7 +120,7 @@ useEffect(()=>{
         <div className='flex-1'>
           <div className='flex justify-between text-base sm:text-2xl mb-4'>
             <Title text1={'ALL'} text2={'COLLECTION'}/>
-            <select className='border-2 border-gray-300 text-sm px-2'>
+            <select onChange={(e)=>{setsortType(e.target.value)}} className='border-2 border-gray-300 text-sm px-2'>
               <option value='revelant'>Sort by:Revelant</option>
               <option value='low-high'>Sort by:low to high</option>
               <option value='high-low'>Sort by:high to low</option>
