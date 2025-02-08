@@ -6,7 +6,6 @@ import Productitem from '../components/Productitem';
 const Collection = () => {
   const {products ,search,showSearch} = useContext(ShopContext);
   const[showFilter,setShowFilter]=useState(false);
-  console.log(products);
   const[filterproducts,setfilterproducts]=useState([]);
 
   const[category,setcategory]=useState([]);
